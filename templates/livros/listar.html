@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="mb-16">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div class="space-y-4 max-w-2xl">
+            <h1 class="text-5xl md:text-6xl font-extrabold font-headline tracking-tight text-on-surface leading-[1.1]">
+                Sua Biblioteca, <br/>
+                <span class="bg-gradient-to-r from-primary to-tertiary bg-clip-text text-transparent">Reimaginada.</span>
+            </h1>
+            <p class="text-lg text-on-surface-variant font-body leading-relaxed">
+                Gerencie sua coleção com elegância e facilidade.
+            </p>
+        </div>
+        
+        <a href="/livros/add"
+        class="flex items-center gap-3 bg-gradient-to-r from-primary to-primary-dim text-white px-8 py-5 rounded-full font-bold shadow-xl shadow-primary/20 hover:scale-[1.05] transition-all duration-300 active:scale-95 group">
+            
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">
+                add_circle
+            </span>
+
+            <span class="text-white">Novo Livro</span>
+        </a>
+    </div>
+
+    <div class="mt-12 flex items-center">
+        <div class="bg-primary text-white px-6 py-4 rounded-full font-semibold shadow-lg shadow-primary/20">
+            Todos os Livros ({{ livros|length }})
+        </div>
+    </div>
+</section>
+<!-- lista dos livros-->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    {% for l in livros %}
+    <div class="group bg-surface-container-lowest p-5 rounded-xl transition-all duration-500 hover:shadow-2xl hover:scale-[1.02] flex flex-col border border-surface-container-high">
+        
+        <div class="relative aspect-[3/4] rounded-lg overflow-hidden shadow-xl mb-6 transform group-hover:-translate-y-2 transition-transform duration-500 bg-gradient-to-br from-primary-container to-surface-container-highest flex items-center justify-center">
+            <!-- capa do livro -->
+            {% if l.capa and l.capa != "" %}
+                <img src="{{ l.capa }}" alt="Capa de {{ l.titulo }}" class="w-full h-full object-cover">
+            {% else %}
+                <div class="flex flex-col items-center gap-2">
+                    <span class="material-symbols-outlined text-7xl text-white/50">auto_stories</span>
+                    <span class="text-[10px] text-white/40 font-bold uppercase tracking-widest">Sem Capa</span>
+                </div>
+            {% endif %}
+
+            <div class="absolute top-4 right-4">
+                <span class="bg-primary/90 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase">
+                    {{ l.ano }}
+                </span>
+            </div>
+        </div>
+
+        
+            <div class="space-y-2 flex-grow">
+                <h3 class="text-xl font-extrabold font-headline leading-tight text-on-surface group-hover:text-primary transition-colors">
+                    {{ l.titulo }}
+                </h3>
+
+                <!-- autor -->
+                <p class="text-sm text-on-surface-variant font-medium">
+                    {{ l.autor }}
+                </p>
+            </div>
+        <div class="mt-6 pt-6 border-t border-surface-container-high flex justify-between items-center">
+
+            <!-- id do livro -->
+            <span class="text-[10px] font-bold text-outline">
+                ID: #{{ l.id }}
+            </span>
+
+            <!-- botoes acao -->
+            <div class="flex items-center gap-2">
+
+                <a href="/livros/edit/{{l.id}}"
+                class="text-green-600 hover:bg-green-100 p-2 rounded-full transition-all">
+                    <span class="material-symbols-outlined">edit</span>
+                </a>
+
+                <a href="/livros/delete/{{l.id}}" 
+                class="text-red-600 hover:bg-red-100 p-2 rounded-full transition-all"
+                onclick="return confirm('Tem certeza que deseja excluir {{l.titulo}}?')">
+                    <span class="material-symbols-outlined">delete</span>
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<!-- mensagem caso nao tenha livros cadastrados -->
+{% if not livros %}
+<div class="mt-20 text-center py-20 bg-surface-container-low rounded-xl border-2 border-dashed border-outline-variant">
+    <span class="material-symbols-outlined text-6xl text-outline mb-4 opacity-50">inbox</span>
+    <h3 class="text-xl font-bold text-on-surface">Nenhum livro cadastrado</h3>
+    <p class="text-on-surface-variant">Clique em "Novo Livro" para começar.</p>
+</div>
+{% endif %}
+{% endblock %}

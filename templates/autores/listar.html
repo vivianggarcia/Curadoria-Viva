@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="flex items-center justify-between mb-10">
+    
+    <div class="flex flex-col">
+        <span class="text-xs font-bold text-primary uppercase tracking-[0.2em]">
+            Gestão de Autores
+        </span>
+        <h1 class="text-3xl font-extrabold text-on-surface font-headline">
+            Autores Cadastrados
+        </h1>
+    </div>
+
+    <a href="{{ url_for('autores.add_autor') }}"
+       class="flex items-center gap-2 px-6 py-3 rounded-full 
+       bg-gradient-to-r from-primary to-[#809bff] text-white font-bold 
+       shadow-lg shadow-primary/30 hover:scale-105 transition-all">
+
+        <span class="material-symbols-outlined">add</span>
+        Novo Autor
+    </a>
+
+</div>
+
+
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+{% for a in autores %}
+<div class="group relative bg-surface-container-lowest rounded-2xl p-6 
+            shadow-lg shadow-[#2c2a51]/5 border border-surface-container-high
+            hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+
+    <!-- topo -->
+    <div class="flex items-center gap-4 mb-5">
+
+        <!-- avatar -->
+        <div class="relative">
+            <img src="https://ui-avatars.com/api/?name={{a.nome}}&background=ddd9ff&color=004be2"
+                 class="w-14 h-14 rounded-full shadow">
+
+            <div class="absolute inset-0 rounded-full bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition"></div>
+        </div>
+
+        <!-- nome -->
+        <div>
+            <h3 class="text-lg font-bold text-on-surface leading-tight">
+                {{ a.nome }}
+            </h3>
+            <span class="text-xs text-on-surface-variant">
+                Autor registrado
+            </span>
+        </div>
+
+    </div>
+
+    <!-- descricao fixa -->
+    <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">
+        Autor cadastrado no sistema de biblioteca para gerenciamento de obras e acervo.
+    </p>
+
+
+        <!-- botoes de acao -->
+        <div class="flex justify-between items-center">
+
+            <div class="flex gap-3">
+
+                <!-- editar -->
+                <a href="{{ url_for('autores.edit_autor', id=a.id) }}"
+                class="text-green-600 hover:bg-green-100 p-3 rounded-full transition-all hover:scale-110"
+                title="Editar">
+                    <span class="material-symbols-outlined text-2xl">edit</span>
+                </a>
+
+                <!-- excluir -->
+                <a href="{{ url_for('autores.delete_autor', id=a.id) }}"
+                onclick="return confirm('Deseja excluir este autor?')"
+                class="text-red-600 hover:bg-red-100 p-3 rounded-full transition-all hover:scale-110"
+                title="Excluir">
+                    <span class="material-symbols-outlined text-2xl">delete</span>
+                </a>
+
+            </div>
+
+        
+
+        <!-- id -->
+        <span class="text-xs text-on-surface-variant opacity-60">
+            #{{ a.id }}
+        </span>
+
+    </div>
+
+</div>
+{% endfor %}
+
+</div>
+
+
+<!-- EMPTY STATE -->
+{% if autores|length == 0 %}
+<div class="text-center mt-20">
+
+    <span class="material-symbols-outlined text-6xl text-primary/30 mb-4">
+        group
+    </span>
+
+    <h2 class="text-xl font-bold text-on-surface mb-2">
+        Nenhum autor cadastrado
+    </h2>
+
+    <p class="text-on-surface-variant mb-6">
+        Comece adicionando seu primeiro autor ao sistema.
+    </p>
+
+    <a href="{{ url_for('autores.add_autor') }}"
+       class="px-6 py-3 bg-primary text-white rounded-full font-bold hover:scale-105 transition">
+        Adicionar Autor
+    </a>
+
+</div>
+{% endif %}
+
+{% endblock %}

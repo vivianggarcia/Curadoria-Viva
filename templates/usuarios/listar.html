@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="flex justify-between items-center mb-10">
+    <h1 class="text-4xl font-extrabold font-headline text-on-surface">Membros do Acervo</h1>
+    <a href="/usuarios/add" class="bg-primary text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 shadow-lg">
+        <span class="material-symbols-outlined">person_add</span> Novo Usuário
+    </a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for u in usuarios %}
+    <div class="bg-white p-6 rounded-2xl border border-surface-container-high shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+        <div class="w-16 h-16 rounded-full overflow-hidden bg-primary-container flex items-center justify-center flex-shrink-0 border-2 border-white shadow-inner">
+            {% if u.foto %}
+                <img src="{{ u.foto }}" class="w-full h-full object-cover">
+            {% else %}
+                <span class="text-xl font-bold text-white">{{ u.nome[0]|upper }}</span>
+            {% endif %}
+        </div>
+        
+        <!-- dados -->
+        <div class="flex-grow min-w-0">
+            <h3 class="font-bold text-on-surface truncate">{{ u.nome }}</h3>
+            <p class="text-xs text-on-surface-variant truncate">{{ u.email }}</p>
+            <p class="text-[10px] text-primary font-bold mt-1">{{ u.telefone }}</p>
+        </div>
+
+        <!-- botoes acao -->
+        <div class="flex flex-col gap-2">
+
+            <a href="/usuarios/edit/{{u.id}}"
+            class="text-green-600 hover:bg-green-100 p-2 rounded-full transition-all">
+                <span class="material-symbols-outlined text-sm">edit</span>
+            </a>
+
+            <a href="/usuarios/delete/{{u.id}}"
+            class="text-red-600 hover:bg-red-100 p-2 rounded-full transition-all"
+            onclick="return confirm('Excluir?')">
+                <span class="material-symbols-outlined text-sm">delete</span>
+            </a>
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

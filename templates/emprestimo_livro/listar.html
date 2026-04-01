@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&family=Be+Vietnam+Pro:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+body { font-family: 'Be Vietnam Pro', sans-serif; }
+.headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+</style>
+
+<main class="min-h-screen px-6 py-10 bg-[#f9f5ff]">
+
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h2 class="text-3xl font-extrabold headline text-[#2c2a51]">
+                Empréstimos x Livros
+            </h2>
+            <p class="text-sm text-[#5a5781]">
+                Gerencie os vínculos entre empréstimos e obras
+            </p>
+        </div>
+
+        <!-- abir modal -->
+        <button onclick="abrirModal()"
+            class="bg-gradient-to-r from-[#004be2] to-[#809bff] text-white px-6 py-3 rounded-full font-bold shadow hover:scale-105 transition">
+            + Nova Relação
+        </button>
+    </div>
+
+    <!-- tabela -->
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+
+        <table class="w-full text-left">
+            <thead class="bg-[#eeeaff] text-xs uppercase text-[#5a5781]">
+                <tr>
+                    <th class="px-6 py-4">Empréstimo</th>
+                    <th class="px-6 py-4">Livro</th>
+                    <th class="px-6 py-4 text-center">Ações</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y">
+
+            {% for d in dados %}
+            <tr class="hover:bg-[#f3eeff] transition">
+
+                <!-- emprestimo -->
+                <td class="px-6 py-4">
+                    <span class="font-bold text-[#2c2a51]">
+                        #{{ d.emprestimo }}
+                    </span>
+                </td>
+
+                <!-- livro -->
+              <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+
+                       {% if d.capa %}
+                            <img 
+                                src="{{ d.capa }}"
+                                class="w-10 h-14 rounded shadow object-cover">
+                        {% else %}
+                            <div class="w-10 h-14 rounded shadow bg-gradient-to-br from-gray-400 to-gray-600 flex flex-col items-center justify-center">
+                                <span class="material-symbols-outlined text-white text-lg">menu_book</span>
+                                <span class="text-[8px] text-white font-bold">Sem capa</span>
+                            </div>
+                        {% endif %}
+
+                        <div>
+                            <p class="font-bold text-[#2c2a51]">
+                                {{ d.livro }}
+                            </p>
+
+                            <span class="text-xs text-[#5a5781]">
+                                ID Livro: {{ d.id_livro }}
+                            </span>
+                        </div>
+
+                    </div>
+                </td>
+                <!-- acoes -->
+               <td class="px-6 py-4 text-center">
+                    <div class="flex justify-center gap-3">
+
+                        <!-- editar -->
+                        <a href="/emprestimo_livro/edit/{{d.id}}"
+                        class="text-green-600 hover:bg-green-100 p-3 rounded-full transition-all hover:scale-110"
+                        title="Editar">
+                            <span class="material-symbols-outlined text-2xl">edit</span>
+                        </a>
+
+                        <!-- excluir -->
+                        <a href="/emprestimo_livro/delete/{{d.id}}"
+                        onclick="return confirm('Deseja excluir esta relação?')"
+                        class="text-red-600 hover:bg-red-100 p-3 rounded-full transition-all hover:scale-110"
+                        title="Excluir">
+                            <span class="material-symbols-outlined text-2xl">delete</span>
+                        </a>
+
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+    </div>
+
+</main>
+
+<!-- modal criar relacao -->
+<div id="modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center">
+
+    <div class="bg-white p-8 rounded-2xl w-full max-w-md shadow-xl">
+
+        <h3 class="text-xl font-bold mb-6 text-[#2c2a51]">
+            Nova Relação
+        </h3>
+
+        <form method="post" action="/emprestimo_livro/add" class="flex flex-col gap-4">
+
+            <!-- selecionar emprestimo -->
+            <select name="id_emprestimo" required
+                class="p-3 rounded-lg border bg-gray-50">
+
+                <option disabled selected>Selecione o empréstimo</option>
+                {% for e in emprestimos %}
+                <option value="{{e.id}}">
+                    Empréstimo #{{e.id}}
+                </option>
+                {% endfor %}
+            </select>
+
+            <!-- selecionar livro -->
+            <select name="id_livro" required
+                class="p-3 rounded-lg border bg-gray-50">
+
+                <option disabled selected>Selecione o livro</option>
+                {% for l in livros %}
+                <option value="{{l.id}}">
+                    {{l.titulo}}
+                </option>
+                {% endfor %}
+            </select>
+
+            <!-- botoes -->
+            <div class="flex justify-end gap-3 mt-4">
+                <button type="button" onclick="fecharModal()"
+                    class="px-4 py-2 text-gray-500">
+                    Cancelar
+                </button>
+
+                <button type="submit"
+                    class="bg-blue-600 text-white px-6 py-2 rounded-lg">
+                    Salvar
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+function abrirModal() {
+    document.getElementById('modal').classList.remove('hidden')
+    document.getElementById('modal').classList.add('flex')
+}
+
+function fecharModal() {
+    document.getElementById('modal').classList.add('hidden')
+}
+</script>
+
+{% endblock %}

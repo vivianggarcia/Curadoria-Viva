@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- menos espaco do topo -->
+<section class="relative min-h-[80vh] flex items-center overflow-hidden px-6 lg:px-24 pt-10">
+    
+    <div class="absolute inset-0 z-0">
+        <div class="absolute top-[-10%] right-[-10%] w-[60%] h-[80%] bg-primary-container opacity-20 blur-[120px] rounded-full"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[60%] bg-tertiary-container opacity-20 blur-[100px] rounded-full"></div>
+    </div>
+
+    <div class="container mx-auto grid lg:grid-cols-2 gap-8 items-center relative z-10">
+
+        <!-- texto -->
+        <div class="space-y-6">
+
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-high text-primary text-sm">
+                <span class="material-symbols-outlined text-sm">auto_stories</span>
+                <span>Bem-vindo</span>
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight italic leading-tight">
+                Curadoria <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-container">
+                    Viva.
+                </span>
+            </h1>
+
+            <p class="text-lg text-on-surface-variant max-w-xl">
+                Sistema completo para gestão de biblioteca com controle de usuários, autores, livros e empréstimos.
+            </p>
+
+            <div class="flex gap-4 pt-2">
+
+                <a href="{{ url_for('livros.listar_livros') }}"
+                   class="px-6 py-3 bg-primary text-white font-semibold rounded-full hover:scale-105 transition">
+                    Livros
+                </a>
+
+                <a href="{{ url_for('autores.listar_autores') }}"
+                   class="px-6 py-3 bg-surface-container-high rounded-full hover:bg-surface-container-highest transition">
+                    Autores
+                </a>
+
+            </div>
+        </div>
+
+        <!-- imagens -->
+        <div class="relative">
+            <div class="aspect-[4/5] rounded-xl overflow-hidden shadow-xl">
+                <img src="https://percursosliterariosblog.com/wp-content/uploads/2019/04/dsc3619.jpg"
+                     class="w-full h-full object-cover">
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- cards  -->
+<section class="py-12 px-6 lg:px-24">
+    <div class="grid md:grid-cols-3 gap-4">
+
+        <!-- usuarios -->
+        <a href="{{ url_for('usuarios.listar') }}"
+           class="bg-surface-container p-6 rounded-lg shadow hover:shadow-lg transition flex flex-col gap-3">
+
+            <span class="material-symbols-outlined text-primary text-3xl">group</span>
+
+            <h3 class="text-xl font-bold">Usuários</h3>
+            <p class="text-sm text-on-surface-variant">
+                Gerencie usuários do sistema.
+            </p>
+        </a>
+
+        <!-- livros -->
+        <a href="{{ url_for('livros.listar_livros') }}"
+           class="bg-surface-container p-6 rounded-lg shadow hover:shadow-lg transition flex flex-col gap-3">
+
+            <span class="material-symbols-outlined text-primary text-3xl">menu_book</span>
+
+            <h3 class="text-xl font-bold">Livros</h3>
+            <p class="text-sm text-on-surface-variant">
+                Controle completo do acervo.
+            </p>
+        </a>
+
+        <!-- emprestimos -->
+        <a href="{{ url_for('emprestimos.listar_emprestimos') }}"
+           class="bg-surface-container p-6 rounded-lg shadow hover:shadow-lg transition flex flex-col gap-3">
+
+            <span class="material-symbols-outlined text-primary text-3xl">sync_alt</span>
+
+            <h3 class="text-xl font-bold">Empréstimos</h3>
+            <p class="text-sm text-on-surface-variant">
+                Fluxo de empréstimos e devoluções.
+            </p>
+        </a>
+
+    </div>
+</section>
+
+
+<!-- card dev  -->
+<section class="py-10 px-6 lg:px-24">
+    <div class="max-w-md mx-auto">
+
+        <div class="glass-card p-6 rounded-xl shadow border text-center">
+
+            <img src="https://avatars.githubusercontent.com/u/181673038?v=4"
+                 class="w-24 h-24 mx-auto rounded-full mb-4 object-cover">
+
+            <h3 class="text-xl font-bold">
+                Vivian Garcia
+            </h3>
+
+            <p class="text-sm text-on-surface-variant">
+                Desenvolvedora • RA: 219320
+            </p>
+
+        </div>
+
+    </div>
+</section>
+
+
+<!-- rodape -->
+<footer class="mt-12 py-12 px-6 lg:px-24 rounded-t-xl
+               bg-gradient-to-r from-primary to-primary-dim text-white">
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-white/10 p-6 rounded-xl backdrop-blur">
+
+            <h2 class="text-3xl font-bold mb-2">
+                Sistema Biblioteca
+            </h2>
+
+            <p class="text-sm opacity-90">
+                Plataforma completa para gerenciamento de bibliotecas acadêmicas.
+            </p>
+
+        </div>
+
+        <!-- links -->
+        <div class="grid grid-cols-2 gap-4 text-sm">
+
+            <div>
+                <p class="font-bold mb-2">Sistema</p>
+                <ul class="space-y-1">
+                    <li><a href="{{ url_for('usuarios.listar') }}">Usuários</a></li>
+                    <li><a href="{{ url_for('livros.listar_livros') }}">Livros</a></li>
+                    <li><a href="{{ url_for('autores.listar_autores') }}">Autores</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <p class="font-bold mb-2">Controle</p>
+                <ul class="space-y-1">
+                    <li><a href="{{ url_for('emprestimos.listar_emprestimos') }}">Empréstimos</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="mt-6 text-xs opacity-80 text-center">
+        © 2026 Sistema Biblioteca
+    </div>
+
+</footer>
+
+{% endblock %}

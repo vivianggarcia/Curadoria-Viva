@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <form method="post" class="bg-surface-container-lowest rounded-[2rem] p-8 md:p-12 shadow-xl border border-surface-container-high flex flex-col gap-8">
+        <h2 class="text-3xl font-extrabold text-on-surface font-headline">Dados do Usuário</h2>
+        <!-- foto do usuario -->
+        <div class="flex flex-col md:flex-row gap-10">
+            <div class="w-full md:w-1/3 flex flex-col items-center gap-4">
+                <div id="avatar-preview" class="w-32 h-32 rounded-full overflow-hidden bg-primary-container flex items-center justify-center border-4 border-white shadow-lg">
+                    {% if user and user.foto %}
+                        <img src="{{ user.foto }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <span class="material-symbols-outlined text-5xl text-white">person</span>
+                    {% endif %}
+                </div>
+                <div class="flex flex-col gap-2 w-full">
+                    <label class="text-[10px] font-bold text-primary uppercase tracking-widest text-center">URL da Foto</label>
+                    <input type="url" name="foto" id="foto_url" maxlength="500" value="{{ user.foto if user else '' }}"
+                        class="w-full bg-surface-container-low border-none rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 text-on-surface" 
+                        placeholder="https://...">
+                    <p id="foto_length" class="text-[10px] text-on-surface-variant/60 text-center">{{ (user.foto or '')|length }}/500 caracteres</p>
+                </div>
+            </div>
+
+            <!-- dados -->
+            <div class="w-full md:w-2/3 flex flex-col gap-4">
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-on-surface-variant uppercase ml-1">Nome Completo</label>
+                    <input type="text" name="nome" value="{{ user.nome if user else '' }}" required class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-on-surface-variant uppercase ml-1">E-mail</label>
+                    <input type="email" name="email" value="{{ user.email if user else '' }}" required class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-on-surface-variant uppercase ml-1">Telefone</label>
+                    <input type="text" id="telefone" name="telefone"
+                        value="{{ user.telefone if user else '' }}"
+                        class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary/20"
+                        placeholder="(99) 99999-9999">
+                </div>
+                <!-- mascara telefone-->
+                <script>
+                    const telefoneInput = document.getElementById('telefone');
+
+                    telefoneInput.addEventListener('input', function (e) {
+                        let v = e.target.value.replace(/\D/g, '');
+
+                        // limita a 11 dígitos
+                        v = v.substring(0, 11);
+
+                        if (v.length > 10) {
+                            // celular: (99) 99999-9999
+                            v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+                        } else if (v.length > 6) {
+                            // fixo: (99) 9999-9999
+                            v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+                        } else if (v.length > 2) {
+                            v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+                        } else {
+                            v = v.replace(/^(\d*)/, '($1');
+                        }
+
+                        e.target.value = v;
+                    });
+                    </script>
+            </div>
+        </div>
+        <!-- botao de acao -->
+        <div class="flex justify-center gap-4 pt-6 border-t border-surface-container">
+            <a href="/usuarios" class="px-8 py-3 text-on-surface-variant font-bold">Cancelar</a>
+            <button type="submit" class="px-12 py-3 bg-primary text-white font-bold rounded-full shadow-lg hover:scale-105 transition-all">
+                Salvar Usuário
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- script para preview da imagem e contagem de caracteres pro perfil -->
+<script>
+    const urlInput = document.getElementById('foto_url');
+    const preview = document.getElementById('avatar-preview');
+    const fotoLength = document.getElementById('foto_length');
+    
+    urlInput.addEventListener('input', (e) => {
+        const url = e.target.value;
+        fotoLength.textContent = `${url.length}/500 caracteres`;
+        
+        if(url) {
+            preview.innerHTML = `<img src="${url}" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=?&background=ddd9ff&color=004be2';">`;
+        } else {
+            preview.innerHTML = `<span class="material-symbols-outlined text-5xl text-white">person</span>`;
+        }
+    });
+</script>
+{% endblock %}

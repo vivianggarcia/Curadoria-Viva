@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="flex items-center justify-between mb-4">
+    <div class="flex flex-col">
+        <span class="text-xs font-bold text-primary uppercase tracking-[0.2em]">
+            Gestão de Autores
+        </span>
+        <h2 class="text-3xl font-extrabold text-on-surface font-headline">
+            Editar Autor
+        </h2>
+    </div>
+    <a href="{{ url_for('autores.listar_autores') }}"
+       class="p-2 rounded-full hover:bg-primary/5 text-on-surface-variant transition-all">
+        <span class="material-symbols-outlined">close</span>
+    </a>
+</div>
+
+<div class="max-w-3xl mx-auto">
+
+    <form method="post"
+          class="bg-surface-container-lowest rounded-[2rem] p-8 md:p-12 shadow-xl shadow-[#2c2a51]/5 flex flex-col gap-8 border border-surface-container-high">
+
+        <div class="flex flex-col gap-2">
+            <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest ml-1">
+                Nome do Autor
+            </label>
+
+            <input type="text" name="nome" required
+                value="{{ autor.nome }}"
+                class="w-full bg-surface-container-low border-none rounded-xl px-6 py-4 
+                focus:ring-2 focus:ring-primary/20 text-on-surface 
+                placeholder:text-on-surface-variant/40 transition-all">
+        </div>
+
+
+        <!-- info box  -->
+        <div class="p-4 bg-primary/5 rounded-2xl border border-primary/10">
+            <p class="text-xs text-primary font-medium">
+                Você está editando um autor existente. Altere apenas se necessário.
+            </p>
+        </div>
+
+
+        <!-- botoes acao -->
+        <div class="flex items-center justify-center gap-6 pt-6 border-t border-surface-container">
+
+            <a href="{{ url_for('autores.listar_autores') }}"
+               class="px-10 py-4 text-on-surface-variant font-bold 
+               hover:bg-surface-container-high rounded-full transition-all">
+                Cancelar
+            </a>
+
+            <button type="submit"
+                class="px-16 py-4 bg-gradient-to-r from-primary to-[#809bff] 
+                text-white font-headline font-bold rounded-full 
+                shadow-xl shadow-primary/30 hover:scale-[1.02] active:scale-95 
+                transition-all flex items-center gap-3">
+
+                <span class="material-symbols-outlined">save</span>
+                Atualizar
+            </button>
+
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

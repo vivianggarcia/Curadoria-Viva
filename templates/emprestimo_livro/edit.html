@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&family=Be+Vietnam+Pro:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+body { font-family: 'Be Vietnam Pro', sans-serif; }
+.headline-font { font-family: 'Plus Jakarta Sans', sans-serif; }
+</style>
+
+<main class="min-h-screen flex items-center justify-center bg-[#f9f5ff] p-6">
+
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8">
+
+        <div class="mb-4">
+            <div class="flex items-center gap-3 mb-2">
+                <span class="material-symbols-outlined text-[#004be2] text-3xl">edit_note</span>
+                <h2 class="text-3xl font-extrabold headline-font text-[#2c2a51]">
+                    Editar Vínculo
+                </h2>
+            </div>
+            <p class="text-sm text-[#5a5781] ml-12">
+                Atualize o livro vinculado ao empréstimo
+            </p>
+        </div>
+        <!-- formulario -->
+        <form method="post" class="space-y-6">
+
+            <!-- secao emprestimo -->
+            <div class="bg-gradient-to-r from-[#f9f5ff] to-[#f3eeff] p-4 rounded-lg border border-[#ddd9ff]">
+                <h3 class="text-sm font-bold text-[#004be2] mb-3 headline-font">EMPRÉSTIMO</h3>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-[#5a5781] mb-2">
+                        Selecione o Empréstimo
+                    </label>
+                    <select name="id_emprestimo"
+                            class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#004be2] outline-none bg-white">
+                        {% for e in emprestimos %}
+                        <option value="{{e.id}}"
+                            {% if e.id == relacao.id_emprestimo %}selected{% endif %}>
+                            #{{e.id}} - ID Usuário: {{e.id_usuario}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- secao livro -->
+            <div class="bg-gradient-to-r from-[#f9f5ff] to-[#f3eeff] p-4 rounded-lg border border-[#ddd9ff]">
+                <h3 class="text-sm font-bold text-[#004be2] mb-3 headline-font">LIVRO</h3>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-[#5a5781] mb-2">
+                        Selecione o Livro
+                    </label>
+                    <select name="id_livro"
+                            class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#004be2] outline-none bg-white">
+                        {% for l in livros %}
+                        <option value="{{l.id}}"
+                            {% if l.id == relacao.id_livro %}selected{% endif %}>
+                            {{l.titulo}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- botoes -->
+            <div class="flex justify-between items-center pt-6 border-t border-gray-200">
+
+                <a href="/emprestimo_livro"
+                   class="text-sm text-[#5a5781] hover:text-[#004be2] font-medium transition">
+                    Voltar
+                </a>
+
+                <button type="submit"
+                        class="bg-gradient-to-r from-[#004be2] to-[#809bff] text-white px-8 py-3 rounded-full font-bold shadow-md hover:shadow-lg hover:scale-105 transition">
+                    Atualizar
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+{% endblock %}

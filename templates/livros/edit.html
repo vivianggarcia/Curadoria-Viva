@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+    <div class="flex flex-col">
+        <span class="text-xs font-bold text-primary uppercase tracking-[0.2em]">Gestão de Acervo</span>
+        <h2 class="text-3xl font-extrabold text-on-surface font-headline">Editar Obra</h2>
+    </div>
+    <a href="/livros" class="p-2 rounded-full hover:bg-primary/5 text-on-surface-variant transition-all">
+        <span class="material-symbols-outlined">close</span>
+    </a>
+</div>
+<div class="max-w-4xl mx-auto">
+    <form method="post" class="bg-surface-container-lowest rounded-[2rem] p-8 md:p-12 shadow-xl shadow-[#2c2a51]/5 flex flex-col gap-10 border border-surface-container-high">
+        
+        <div class="flex flex-col md:flex-row gap-12">
+
+            <!-- capa do livro -->
+            <div class="w-full md:w-2/5 flex flex-col gap-4">
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest ml-1">Capa da Obra</label>
+
+                <div class="relative group">
+                    <div class="aspect-[3/4] rounded-xl overflow-hidden bg-surface-container-high shadow-lg flex items-center justify-center border-2 border-dashed border-outline-variant">
+
+                        <div id="preview-container" class="w-full h-full flex items-center justify-center">
+                            {% if livro.capa %}
+                                <img src="{{ livro.capa }}" class="w-full h-full object-cover">
+                            {% else %}
+                                <div class="flex flex-col items-center text-center">
+                                    <span class="material-symbols-outlined text-6xl text-primary/30">image</span>
+                                    <p class="text-[10px] text-on-surface-variant italic mt-2">Sem capa</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+                <!-- alterar capa -->
+                <div class="flex flex-col gap-2 mt-2">
+                    <label class="text-[10px] font-bold text-primary uppercase tracking-widest ml-1">Link da Imagem (URL)</label>
+                    <input type="url" name="capa" id="url_capa" maxlength="500"
+                        value="{{ livro.capa }}"
+                        class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:text-on-surface-variant/40 transition-all" 
+                        placeholder="https://exemplo.com/foto.jpg">
+                    <p id="url_length" class="text-[10px] text-on-surface-variant/60">{{ (livro.capa or '')|length }}/500 caracteres</p>
+                </div>
+            </div>
+
+            <!-- dados -->
+            <div class="w-full md:w-3/5 flex flex-col gap-6">
+
+                <!-- titulo -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest ml-1">Título da Obra</label>
+                    <input type="text" name="titulo" required
+                        value="{{ livro.titulo }}"
+                        class="w-full bg-surface-container-low border-none rounded-xl px-6 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface transition-all">
+                </div>
+
+                <!-- autor + ano -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- autor -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest ml-1">Autor</label>
+                        <select name="id_autor" required
+                            class="w-full bg-surface-container-low border-none rounded-xl px-6 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface appearance-none transition-all pr-12 cursor-pointer">
+
+                            {% for a in autores %}
+                            <option value="{{a.id}}" {% if a.id == livro.id_autor %}selected{% endif %}>
+                                {{a.nome}}
+                            </option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+
+                    <!-- ano -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest ml-1">Ano</label>
+                        <input type="number" name="ano" required min="1900" max="2100"
+                            value="{{ livro.ano }}"
+                            class="w-full bg-surface-container-low border-none rounded-xl px-6 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface transition-all">
+                        <p class="text-[10px] text-on-surface-variant/60">Intervalo permitido: 1900 - 2100</p>
+                    </div>
+
+                </div>
+
+                <!-- dica fixa -->
+                <div class="p-4 bg-primary/5 rounded-2xl border border-primary/10">
+                    <p class="text-[11px] text-primary font-medium leading-tight">
+                        <span class="font-bold">Dica de Curador:</span> Atualize a capa com imagens de boa qualidade para melhorar a experiência visual.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- botoes de acao -->
+        <div class="flex items-center justify-center gap-6 pt-6 border-t border-surface-container">
+            <a href="/livros" class="px-10 py-4 text-on-surface-variant font-bold hover:bg-surface-container-high rounded-full transition-all">
+                Cancelar
+            </a>
+
+            <button type="submit" 
+                class="px-16 py-4 bg-gradient-to-r from-primary to-[#809bff] text-white font-headline font-bold rounded-full shadow-xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-3">
+                <span class="material-symbols-outlined">save</span>
+                Salvar Alterações
+            </button>
+        </div>
+
+    </form>
+</div>
+
+<!--script tratando erro de imagem -->
+<script>
+    const urlInput = document.getElementById('url_capa');
+    const previewContainer = document.getElementById('preview-container');
+    const urlLength = document.getElementById('url_length');
+
+    urlInput.addEventListener('input', (e) => {
+        const url = e.target.value;
+        urlLength.textContent = `${url.length}/500 caracteres`;
+
+        if (url) {
+            previewContainer.innerHTML = `<img src="${url}" class="w-full h-full object-cover" onerror="this.src='https://ui-avatars.com/api/?name=?&background=ddd9ff&color=004be2&size=300';">`;
+        } else {
+            previewContainer.innerHTML = `
+                <div class="flex flex-col items-center text-center">
+                    <span class="material-symbols-outlined text-6xl text-primary/30">image</span>
+                    <p class="text-[10px] text-on-surface-variant italic mt-2">Sem capa</p>
+                </div>`;
+        }
+    });
+</script>
+
+{% endblock %}

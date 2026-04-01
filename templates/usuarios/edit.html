@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+    <div class="flex flex-col">
+        <span class="text-xs font-bold text-primary uppercase tracking-[0.2em]">Gestão de Membros</span>
+        <h2 class="text-3xl font-extrabold text-on-surface font-headline">Editar Perfil</h2>
+    </div>
+    <a href="/usuarios" class="p-2 rounded-full hover:bg-primary/5 text-on-surface-variant transition-all">
+        <span class="material-symbols-outlined">close</span>
+    </a>
+</div>
+<div class="max-w-4xl mx-auto">
+    <form method="post" class="bg-surface-container-lowest rounded-[2rem] p-8 md:p-12 shadow-xl shadow-[#2c2a51]/5 flex flex-col gap-10 border border-surface-container-high">
+        <!-- foto do usuario -->
+        <div class="flex flex-col md:flex-row gap-12">
+            <div class="w-full md:w-2/5 flex flex-col items-center gap-6">
+                <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest self-start ml-1">Foto do Perfil</label>
+                
+                <div id="avatar-container" class="relative group">
+                    <div id="avatar-preview" class="w-48 h-48 rounded-full overflow-hidden bg-primary-container flex items-center justify-center border-4 border-white shadow-2xl transition-all group-hover:scale-[1.02]">
+                        {% if user.foto and user.foto != "" %}
+                            <img src="{{ user.foto }}" class="w-full h-full object-cover">
+                        {% else %}
+                            <span class="material-symbols-outlined text-7xl text-white/50">person</span>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+                <!-- link da imagem -->
+                <div class="flex flex-col gap-2 w-full mt-4">
+                    <label class="text-[10px] font-bold text-primary uppercase tracking-widest ml-1 text-center">Link da Imagem (URL)</label>
+                    <input type="url" name="foto" id="foto_url" maxlength="500" value="{{ user.foto if user.foto else '' }}"
+                        class="w-full bg-surface-container-low border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:text-on-surface-variant/40 transition-all text-center" 
+                        placeholder="https://exemplo.com/foto.jpg">
+                    <p id="foto_length" class="text-[10px] text-on-surface-variant/60 text-center">{{ (user.foto or '')|length }}/500 caracteres</p>
+                </div>
+            </div>
+            <!-- dados -->
+            <div class="w-full md:w-3/5 flex flex-col gap-6">
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest ml-1">Nome Completo</label>
+                    <input type="text" name="nome" value="{{ user.nome }}" required
+                        class="w-full bg-surface-container-low border-none rounded-xl px-6 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:text-on-surface-variant/40 transition-all">
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest ml-1">E-mail Corporativo</label>
+                    <input type="email" name="email" value="{{ user.email }}" required
+                        class="w-full bg-surface-container-low border-none rounded-xl px-6 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:text-on-surface-variant/40 transition-all">
+                </div>
+
+               <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest ml-1">
+                        Telefone / WhatsApp
+                    </label>
+
+                    <input type="text" id="telefone" name="telefone"
+                        value="{{ user.telefone }}"
+                        class="w-full bg-surface-container-low border-none rounded-xl px-6 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:text-on-surface-variant/40 transition-all" 
+                        placeholder="(00) 00000-0000">
+                </div>
+                <!-- mascara telefone -->
+                <script>
+                    function aplicarMascaraTelefone(inputId) {
+                        const input = document.getElementById(inputId);
+
+                        if (!input) return;
+
+                        input.addEventListener('input', function (e) {
+                            let v = e.target.value.replace(/\D/g, '');
+
+                            v = v.substring(0, 11);
+
+                            if (v.length > 10) {
+                                v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+                            } else if (v.length > 6) {
+                                v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+                            } else if (v.length > 2) {
+                                v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+                            } else {
+                                v = v.replace(/^(\d*)/, '($1');
+                            }
+
+                            e.target.value = v;
+                        });
+                    }
+
+                    // aplica no campo
+                    aplicarMascaraTelefone('telefone');
+                    </script>
+
+                <div class="p-4 bg-surface-container-low rounded-2xl flex items-start gap-3 mt-2">
+                    <span class="material-symbols-outlined text-primary text-xl">info</span>
+                    <p class="text-[11px] text-on-surface-variant leading-tight italic">
+                        Insira informações válidas para contato.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- botao de acao -->
+        <div class="flex items-center justify-center gap-6 pt-8 border-t border-surface-container">
+            <a href="/usuarios" class="px-10 py-4 text-on-surface-variant font-bold hover:bg-surface-container-high rounded-full transition-all">
+                Descartar
+            </a>
+            <button type="submit" 
+                class="px-16 py-4 bg-gradient-to-r from-primary to-primary-container text-white font-headline font-bold rounded-full shadow-xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-3">
+                <span class="material-symbols-outlined">sync</span>
+                Atualizar Cadastro
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- script para preview da imagem e contagem de caracteres pro perfil avatar-->
+<script>
+    const urlInput = document.getElementById('foto_url');
+    const avatarPreview = document.getElementById('avatar-preview');
+    const fotoLength = document.getElementById('foto_length');
+
+    urlInput.addEventListener('input', (e) => {
+        const url = e.target.value;
+        fotoLength.textContent = `${url.length}/500 caracteres`;
+        
+        if (url && url.trim() !== "") {
+            avatarPreview.innerHTML = `<img src="${url}" class="w-full h-full object-cover animate-pulse-slow" 
+                                        onerror="this.src='https://ui-avatars.com/api/?name={{ user.nome|replace(' ', '+') }}&background=ddd9ff&color=004be2&size=300'; this.classList.remove('animate-pulse-slow');">`;
+        } else {
+            avatarPreview.innerHTML = `<span class="material-symbols-outlined text-7xl text-white/50">person</span>`;
+        }
+    });
+</script>
+
+<style>
+    @keyframes pulse-slow {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.8; }
+    }
+    .animate-pulse-slow { animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+</style>
+{% endblock %}

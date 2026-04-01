@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-br">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Curadoria Viva - Sistema de Biblioteca</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#004be2",
+                        "primary-dim": "#0041c7",
+                        "primary-container": "#809bff",
+                        "on-surface": "#2c2a51",
+                        "on-surface-variant": "#5a5781",
+                        "surface": "#f9f5ff",
+                        "surface-container-low": "#f3eeff",
+                        "surface-container-highest": "#ddd9ff",
+                        "tertiary": "#8e00d5",
+                        "outline": "#75729e"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    animation: {
+                        "gradient-shift": "gradient-shift 8s ease infinite",
+                        "float": "float 6s ease-in-out infinite"
+                    },
+                    keyframes: {
+                        "gradient-shift": {
+                            "0%": { "background-position": "0% 50%" },
+                            "50%": { "background-position": "100% 50%" },
+                            "100%": { "background-position": "0% 50%" }
+                        },
+                        "float": {
+                            "0%, 100%": { "transform": "translateY(0px)" },
+                            "50%": { "transform": "translateY(-10px)" }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        body { font-family: 'Be Vietnam Pro', sans-serif; }
+        
+        :root {
+            --gradient-primary: linear-gradient(135deg, #004be2 0%, #0041c7 25%, #3F51B5 50%, #809bff 75%, #8e00d5 100%);
+            --gradient-soft: linear-gradient(135deg, #f9f5ff 0%, #f3eeff 50%, #e8deff 100%);
+        }
+        
+        .header-gradient {
+            background: linear-gradient(135deg, rgba(0, 75, 226, 0.1) 0%, rgba(142, 0, 213, 0.1) 100%);
+            backdrop-filter: blur(20px);
+        }
+        
+        .nav-link { 
+            @apply text-on-surface-variant font-medium hover:bg-gradient-to-r hover:from-primary/10 hover:to-tertiary/10 px-4 py-2 rounded-xl transition-all duration-300 flex items-center gap-2 hover:text-primary;
+        }
+        
+        .active-link {
+            @apply text-primary font-bold bg-primary/10 px-4 py-2 rounded-xl border-none;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #004be2 0%, #8e00d5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        @media (min-width: 1024px) {
+            body {
+                background: linear-gradient(-45deg, #f9f5ff 0%, #f3eeff 25%, #e8deff 50%, #ddd9ff 75%, #f9f5ff 100%);
+                background-size: 400% 400%;
+                animation: gradient-shift 15s ease infinite;
+            }
+        }
+        
+        .desktop-only { display: none; }
+        @media (min-width: 1024px) { .desktop-only { display: block; } }
+        
+        .mobile-only { display: block; }
+        @media (min-width: 1024px) { .mobile-only { display: none; } }
+    </style>
+</head>
+<body class="text-on-surface min-h-screen">
+
+    <!-- menu com gradiente -->
+    <header class="hidden lg:block sticky top-0 z-40 shadow-md">
+        <div class="header-gradient border-b border-primary/5">
+            <div class="max-w-7xl mx-auto px-8 py-6">
+                <div class="flex items-center justify-between">
+                    <!-- logo -->
+                    <div class="flex items-center gap-3">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary via-primary-dim to-tertiary flex items-center justify-center shadow-lg">
+                            <span class="material-symbols-outlined text-white text-2xl">auto_stories</span>
+                        </div>
+                        <div>
+                            <h1 class="gradient-text font-headline text-3xl font-extrabold tracking-tight">Curadoria Viva</h1>
+                            <p class="text-on-surface-variant text-xs font-medium">Sistema de Biblioteca Inteligente</p>
+                        </div>
+                    </div>
+
+                    <!-- menu desktop -->
+                    <nav class="flex items-center gap-2">
+                        <a href="/" class="nav-link {% if request.path == '/' %}active-link{% endif %}">
+                            <span class="material-symbols-outlined text-lg">home</span> Home
+                        </a>
+                        <a href="/usuarios" class="nav-link {% if request.path.startswith('/usuarios') %}active-link{% endif %}">
+                            <span class="material-symbols-outlined text-lg">group</span> Usuários
+                        </a>
+                        <a href="/autores" class="nav-link {% if request.path.startswith('/autores') %}active-link{% endif %}">
+                            <span class="material-symbols-outlined text-lg">person_add</span> Autores
+                        </a>
+                        <a href="/livros" class="nav-link {% if request.path.startswith('/livros') %}active-link{% endif %}">
+                            <span class="material-symbols-outlined text-lg">book</span> Livros
+                        </a>
+                        <a href="/emprestimos" class="nav-link {% if request.path.startswith('/emprestimos') %}active-link{% endif %}">
+                            <span class="material-symbols-outlined text-lg">sync_alt</span> Empréstimos
+                        </a>
+                        <a href="/emprestimo_livro" class="nav-link {% if request.path.startswith('/emprestimo_livro') %}active-link{% endif %}">
+                            <span class="material-symbols-outlined text-lg">menu_book</span> Vínculos
+                        </a>
+                    </nav>
+
+                    <!-- icones direita -->
+                    <div class="flex items-center gap-4">
+                        <button class="p-3 hover:bg-primary/10 rounded-xl transition-all duration-300 text-primary">
+                            <span class="material-symbols-outlined">notifications</span>
+                        </button>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-tertiary flex items-center justify-center text-white font-headline font-bold shadow-lg hover:scale-110 transition-transform cursor-pointer">
+                            A
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- menu mobile-->
+    <header class="lg:hidden sticky top-0 z-40 bg-gradient-to-r from-primary via-primary-container to-tertiary shadow-lg">
+        <div class="px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white">auto_stories</span>
+                </div>
+                <h1 class="text-white font-headline font-bold text-lg">Curadoria Viva</h1>
+            </div>
+            <button class="p-2 hover:bg-white/10 rounded-lg transition-all">
+                <span class="material-symbols-outlined text-white">notifications</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- conteudo principal -->
+    <main class="lg:max-w-7xl lg:mx-auto px-4 lg:px-8 py-6 lg:py-12 pb-24 lg:pb-12 min-h-screen">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- menu mobile nav -->
+    <nav class="fixed bottom-0 left-0 w-full z-50 lg:hidden">
+        <div class="bg-gradient-to-r from-primary via-primary-container to-tertiary shadow-[0_-4px_30px_rgba(0,75,226,0.3)] flex justify-around items-center px-2 py-3">
+            <a href="/" class="flex flex-col items-center gap-1 px-3 py-2 rounded-2xl transition-all duration-300 {% if request.path == '/' %}bg-white/20 text-white scale-110{% else %}text-white/70{% endif %}">
+                <span class="material-symbols-outlined text-2xl">home</span>
+                <span class="text-[9px] font-bold uppercase tracking-widest">Home</span>
+            </a>
+
+            <a href="/livros" class="flex flex-col items-center gap-1 px-3 py-2 rounded-2xl transition-all duration-300 {% if request.path.startswith('/livros') %}bg-white/20 text-white scale-110{% else %}text-white/70{% endif %}">
+                <span class="material-symbols-outlined text-2xl">book</span>
+                <span class="text-[9px] font-bold uppercase tracking-widest">Livros</span>
+            </a>
+
+            <a href="/usuarios" class="flex flex-col items-center gap-1 px-3 py-2 rounded-2xl transition-all duration-300 {% if request.path.startswith('/usuarios') %}bg-white/20 text-white scale-110{% else %}text-white/70{% endif %}">
+                <span class="material-symbols-outlined text-2xl">group</span>
+                <span class="text-[9px] font-bold uppercase tracking-widest">Usuários</span>
+            </a>
+
+            <a href="/emprestimos" class="flex flex-col items-center gap-1 px-3 py-2 rounded-2xl transition-all duration-300 {% if request.path.startswith('/emprestimos') %}bg-white/20 text-white scale-110{% else %}text-white/70{% endif %}">
+                <span class="material-symbols-outlined text-2xl">sync_alt</span>
+                <span class="text-[9px] font-bold uppercase tracking-widest">Empréstimos</span>
+            </a>
+
+            <a href="/emprestimo_livro" class="flex flex-col items-center gap-1 px-3 py-2 rounded-2xl transition-all duration-300 {% if request.path.startswith('/emprestimo_livro') %}bg-white/20 text-white scale-110{% else %}text-white/70{% endif %}">
+                <span class="material-symbols-outlined text-2xl">menu_book</span>
+                <span class="text-[9px] font-bold uppercase tracking-widest">Vínculos</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- mensagens -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="fixed top-4 right-4 z-50 space-y-3 pr-4">
+                {% for category, message in messages %}
+                    <div class="
+                        px-6 py-4 rounded-xl shadow-xl text-white font-medium text-sm animate-pulse
+                        {% if category == 'success' %} bg-gradient-to-r from-green-500 to-emerald-600
+                        {% elif category == 'error' %} bg-gradient-to-r from-red-500 to-pink-600
+                        {% else %} bg-gradient-to-r from-blue-500 to-purple-600
+                        {% endif %}
+                    ">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">
+                                {% if category == 'success' %}check_circle{% elif category == 'error' %}error{% else %}info{% endif %}
+                            </span>
+                            {{ message }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>
+        </a>
+
+        <a href="/emprestimo_livro" class="flex flex-col items-center gap-1 {% if request.path.startswith('/emprestimo_livro') %}bg-primary text-white rounded-full p-3 -translate-y-5 shadow-lg shadow-primary/40{% else %}text-slate-400{% endif %}">
+            <span class="material-symbols-outlined">menu_book</span>
+            <span class="text-[10px] font-bold uppercase tracking-widest">Livros Emprestados.</span>
+        </a>
+    </nav>
+
+
+</body>
+</html>
