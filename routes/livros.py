@@ -1,18 +1,77 @@
-from flask import Blueprint, request, render_template, redirect, flash
+from flask import Blueprint, request, render_template, redirect, flash, url_for, session
 from db import conectar
+from functools import wraps
 
 livros_bp = Blueprint('livros', __name__)
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Você precisa fazer login para acessar esta página.', 'error')
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 @livros_bp.route('/livros')
+@login_required
 def listar_livros():
+    q = request.args.get('q', '').strip()
+    autor_id = request.args.get('autor', '').strip()
+    page = request.args.get('page', '1')
+    try:
+        page = int(page)
+        if page < 1:
+            page = 1
+    except ValueError:
+        page = 1
+
+    per_page = 6
+    offset = (page - 1) * per_page
+
+    where_clauses = []
+    params = []
+    if q:
+        where_clauses.append('(l.titulo LIKE %s OR a.nome LIKE %s)')
+        params.extend([f'%{q}%'] * 2)
+    if autor_id:
+        where_clauses.append('l.id_autor = %s')
+        params.append(autor_id)
+
+    where_sql = 'WHERE ' + ' AND '.join(where_clauses) if where_clauses else ''
+
     conn = conectar()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT l.id, l.titulo, l.ano, l.capa, a.nome AS autor FROM livros l JOIN autores a ON l.id_autor = a.id")
+    cursor.execute('SELECT * FROM autores ORDER BY nome ASC')
+    autores = cursor.fetchall()
+
+    cursor.execute(f'SELECT COUNT(*) AS total FROM livros l JOIN autores a ON l.id_autor = a.id {where_sql}', params)
+    total = cursor.fetchone()['total']
+
+    cursor.execute(
+        f'SELECT l.id, l.titulo, l.ano, l.capa, a.nome AS autor FROM livros l JOIN autores a ON l.id_autor = a.id {where_sql} ORDER BY l.titulo ASC LIMIT %s OFFSET %s',
+        params + [per_page, offset]
+    )
     livros = cursor.fetchall()
-    return render_template('livros/listar.html', livros=livros)
+    conn.close()
+
+    total_pages = max((total + per_page - 1) // per_page, 1)
+
+    return render_template(
+        'livros/listar.html',
+        livros=livros,
+        autores=autores,
+        q=q,
+        autor_id=autor_id,
+        page=page,
+        total_pages=total_pages,
+        total=total,
+        per_page=per_page
+    )
 
 @livros_bp.route('/livros/add', methods=['GET','POST'])
+@login_required
 def add_livro():
     conn = conectar()
     cursor = conn.cursor(dictionary=True)
@@ -40,6 +99,7 @@ def add_livro():
     return render_template('livros/add.html', autores=autores)
 
 @livros_bp.route('/livros/delete/<int:id>')
+@login_required
 def delete_livro(id):
     conn = conectar()
     cursor = conn.cursor()

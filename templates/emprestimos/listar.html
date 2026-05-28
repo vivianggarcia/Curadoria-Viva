@@ -13,20 +13,40 @@ body { font-family: 'Be Vietnam Pro', sans-serif; }
 
 <main class="min-h-screen px-6 py-10 bg-[#f9f5ff]">
 
-    <section class="mb-8 flex justify-between items-center">
-        <div>
-            <h2 class="text-3xl font-extrabold headline-font text-[#2c2a51]">
-                Empréstimos + Livros
-            </h2>
-            <p class="text-sm text-[#5a5781]">
-                Visualização integrada (JOIN)
-            </p>
+    <section class="space-y-6 mb-8">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-extrabold headline-font text-[#2c2a51]">
+                    Empréstimos + Livros
+                </h2>
+                <p class="text-sm text-[#5a5781]">
+                    Visualização integrada (JOIN) — <strong>{{ total }}</strong> resultados
+                </p>
+            </div>
+
+            <a href="/emprestimos/add"
+               class="bg-gradient-to-r from-[#004be2] to-[#809bff] text-white px-6 py-3 rounded-full font-bold shadow hover:scale-105 transition">
+                + Novo
+            </a>
         </div>
 
-        <a href="/emprestimos/add"
-           class="bg-gradient-to-r from-[#004be2] to-[#809bff] text-white px-6 py-3 rounded-full font-bold shadow hover:scale-105 transition">
-            + Novo
-        </a>
+        <form action="{{ url_for('emprestimos.listar_emprestimos') }}" method="get" class="grid gap-4 lg:grid-cols-[1fr_180px_180px_auto] items-end">
+            <label class="w-full">
+                <span class="text-sm font-semibold text-[#5a5781]">Buscar</span>
+                <input type="text" name="q" value="{{ q }}" placeholder="Usuário, livro ou ID" class="mt-2 w-full rounded-2xl border border-[#dfe3ff] bg-white px-4 py-3 shadow-sm focus:border-primary focus:outline-none" />
+            </label>
+            <label class="w-full">
+                <span class="text-sm font-semibold text-[#5a5781]">Status</span>
+                <select name="status" class="mt-2 w-full rounded-2xl border border-[#dfe3ff] bg-white px-4 py-3 shadow-sm focus:border-primary focus:outline-none">
+                    <option value="">Todos</option>
+                    <option value="andamento" {% if status == 'andamento' %}selected{% endif %}>Em andamento</option>
+                    <option value="finalizado" {% if status == 'finalizado' %}selected{% endif %}>Finalizado</option>
+                    <option value="sem_data" {% if status == 'sem_data' %}selected{% endif %}>Sem data</option>
+                </select>
+            </label>
+            <div></div>
+            <button type="submit" class="bg-primary text-white px-6 py-3 rounded-full font-bold hover:opacity-90 transition">Buscar</button>
+        </form>
     </section>
 
     <!-- tabela listagem -->
@@ -176,6 +196,23 @@ body { font-family: 'Be Vietnam Pro', sans-serif; }
 
             </table>
         </div>
+
+        {% if total_pages > 1 %}
+        <div class="mt-6 px-6 py-4 bg-white rounded-b-2xl flex flex-wrap justify-between items-center gap-3 border-t border-[#eeeaff]">
+            <div class="text-sm text-[#5a5781]">Página {{ page }} de {{ total_pages }}</div>
+            <div class="flex flex-wrap gap-2">
+                {% if page > 1 %}
+                <a href="{{ url_for('emprestimos.listar_emprestimos', q=q, status=status, page=page-1) }}" class="px-4 py-2 rounded-full border border-[#dfe3ff] text-[#2c2a51] hover:bg-[#004be2] hover:text-white transition">Anterior</a>
+                {% endif %}
+                {% for p in range(1, total_pages+1) %}
+                    <a href="{{ url_for('emprestimos.listar_emprestimos', q=q, status=status, page=p) }}" class="px-4 py-2 rounded-full border {% if p == page %}bg-primary text-white border-primary{% else %}bg-white text-[#2c2a51] border-[#dfe3ff] hover:bg-surface{% endif %}">{{ p }}</a>
+                {% endfor %}
+                {% if page < total_pages %}
+                <a href="{{ url_for('emprestimos.listar_emprestimos', q=q, status=status, page=page+1) }}" class="px-4 py-2 rounded-full border border-[#dfe3ff] text-[#2c2a51] hover:bg-[#004be2] hover:text-white transition">Próxima</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
 
     </div>
 

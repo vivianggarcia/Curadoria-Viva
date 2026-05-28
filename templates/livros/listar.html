@@ -24,11 +24,29 @@
         </a>
     </div>
 
-    <div class="mt-12 flex items-center">
-        <div class="bg-primary text-white px-6 py-4 rounded-full font-semibold shadow-lg shadow-primary/20">
-            Todos os Livros ({{ livros|length }})
+    <div class="mt-8 grid gap-4 lg:grid-cols-[1fr_auto] items-end">
+        <div>
+            <div class="text-sm text-on-surface-variant">Total de resultados: <strong>{{ total }}</strong></div>
         </div>
+       
     </div>
+
+    <form action="{{ url_for('livros.listar_livros') }}" method="get" class="mt-8 grid gap-4 lg:grid-cols-[1fr_220px_220px]">
+        <label class="w-full">
+            <span class="text-sm font-semibold text-on-surface-variant">Buscar livros</span>
+            <input type="text" name="q" value="{{ q }}" placeholder="Título ou autor" class="mt-2 w-full rounded-2xl border border-surface-container-high bg-white px-4 py-3 shadow-sm focus:border-primary focus:outline-none" />
+        </label>
+        <label class="w-full">
+            <span class="text-sm font-semibold text-on-surface-variant">Filtrar por autor</span>
+            <select name="autor" class="mt-2 w-full rounded-2xl border border-surface-container-high bg-white px-4 py-3 shadow-sm focus:border-primary focus:outline-none">
+                <option value="">Todos os autores</option>
+                {% for autor in autores %}
+                <option value="{{ autor.id }}" {% if autor_id == autor.id|string %}selected{% endif %}>{{ autor.nome }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <button type="submit" class="w-full lg:w-auto bg-primary text-white px-6 py-3 rounded-full font-bold hover:opacity-90 transition">Buscar</button>
+    </form>
 </section>
 <!-- lista dos livros-->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -91,6 +109,21 @@
     </div>
     {% endfor %}
 </div>
+
+{% if total_pages > 1 %}
+<div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+    {% if page > 1 %}
+    <a href="{{ url_for('livros.listar_livros', q=q, autor=autor_id, page=page-1) }}" class="px-4 py-2 rounded-full bg-surface text-on-surface border border-surface-container-high hover:bg-primary hover:text-white transition">Anterior</a>
+    {% endif %}
+    {% for p in range(1, total_pages+1) %}
+        <a href="{{ url_for('livros.listar_livros', q=q, autor=autor_id, page=p) }}" class="px-4 py-2 rounded-full border {% if p == page %}bg-primary text-white{% else %}bg-white text-on-surface border-surface-container-high hover:bg-surface{% endif %}">{{ p }}</a>
+    {% endfor %}
+    {% if page < total_pages %}
+    <a href="{{ url_for('livros.listar_livros', q=q, autor=autor_id, page=page+1) }}" class="px-4 py-2 rounded-full bg-surface text-on-surface border border-surface-container-high hover:bg-primary hover:text-white transition">Próxima</a>
+    {% endif %}
+</div>
+{% endif %}
+
 <!-- mensagem caso nao tenha livros cadastrados -->
 {% if not livros %}
 <div class="mt-20 text-center py-20 bg-surface-container-low rounded-xl border-2 border-dashed border-outline-variant">

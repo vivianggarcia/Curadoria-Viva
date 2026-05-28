@@ -11,21 +11,48 @@ body { font-family: 'Be Vietnam Pro', sans-serif; }
 
 <main class="min-h-screen px-6 py-10 bg-[#f9f5ff]">
 
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h2 class="text-3xl font-extrabold headline text-[#2c2a51]">
-                Empréstimos x Livros
-            </h2>
-            <p class="text-sm text-[#5a5781]">
-                Gerencie os vínculos entre empréstimos e obras
-            </p>
+    <div class="space-y-6 mb-8">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-extrabold headline text-[#2c2a51]">
+                    Empréstimos x Livros
+                </h2>
+                <p class="text-sm text-[#5a5781]">
+                    Gerencie os vínculos entre empréstimos e obras — <strong>{{ total }}</strong> registros
+                </p>
+            </div>
+
+            <button onclick="abrirModal()"
+                class="bg-gradient-to-r from-[#004be2] to-[#809bff] text-white px-6 py-3 rounded-full font-bold shadow hover:scale-105 transition">
+                + Nova Relação
+            </button>
         </div>
 
-        <!-- abir modal -->
-        <button onclick="abrirModal()"
-            class="bg-gradient-to-r from-[#004be2] to-[#809bff] text-white px-6 py-3 rounded-full font-bold shadow hover:scale-105 transition">
-            + Nova Relação
-        </button>
+        <form action="{{ url_for('emprestimo_livro.listar') }}" method="get" class="grid gap-4 lg:grid-cols-[1fr_180px_180px_auto] items-end">
+            <label class="w-full">
+                <span class="text-sm font-semibold text-[#5a5781]">Buscar</span>
+                <input type="text" name="q" value="{{ q }}" placeholder="Empréstimo ou livro" class="mt-2 w-full rounded-2xl border border-[#dfe3ff] bg-white px-4 py-3 shadow-sm focus:border-primary focus:outline-none" />
+            </label>
+            <label class="w-full">
+                <span class="text-sm font-semibold text-[#5a5781]">Empréstimo</span>
+                <select name="emprestimo" class="mt-2 w-full rounded-2xl border border-[#dfe3ff] bg-white px-4 py-3 shadow-sm focus:border-primary focus:outline-none">
+                    <option value="">Todos</option>
+                    {% for e in emprestimos %}
+                    <option value="{{ e.id }}" {% if emprestimo_id == e.id|string %}selected{% endif %}>Empréstimo #{{ e.id }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label class="w-full">
+                <span class="text-sm font-semibold text-[#5a5781]">Livro</span>
+                <select name="livro" class="mt-2 w-full rounded-2xl border border-[#dfe3ff] bg-white px-4 py-3 shadow-sm focus:border-primary focus:outline-none">
+                    <option value="">Todos</option>
+                    {% for l in livros %}
+                    <option value="{{ l.id }}" {% if livro_id == l.id|string %}selected{% endif %}>{{ l.titulo }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button type="submit" class="bg-primary text-white px-6 py-3 rounded-full font-bold hover:opacity-90 transition">Buscar</button>
+        </form>
     </div>
 
     <!-- tabela -->
@@ -105,6 +132,23 @@ body { font-family: 'Be Vietnam Pro', sans-serif; }
 
             </tbody>
         </table>
+
+        {% if total_pages > 1 %}
+        <div class="px-6 py-4 bg-white border-t border-[#eeeaff] flex flex-wrap justify-between items-center gap-3">
+            <span class="text-sm text-[#5a5781]">Página {{ page }} de {{ total_pages }}</span>
+            <div class="flex flex-wrap gap-2">
+                {% if page > 1 %}
+                <a href="{{ url_for('emprestimo_livro.listar', q=q, emprestimo=emprestimo_id, livro=livro_id, page=page-1) }}" class="px-4 py-2 rounded-full border border-[#dfe3ff] text-[#2c2a51] hover:bg-[#004be2] hover:text-white transition">Anterior</a>
+                {% endif %}
+                {% for p in range(1, total_pages+1) %}
+                    <a href="{{ url_for('emprestimo_livro.listar', q=q, emprestimo=emprestimo_id, livro=livro_id, page=p) }}" class="px-4 py-2 rounded-full border {% if p == page %}bg-primary text-white border-primary{% else %}bg-white text-[#2c2a51] border-[#dfe3ff] hover:bg-surface{% endif %}">{{ p }}</a>
+                {% endfor %}
+                {% if page < total_pages %}
+                <a href="{{ url_for('emprestimo_livro.listar', q=q, emprestimo=emprestimo_id, livro=livro_id, page=page+1) }}" class="px-4 py-2 rounded-full border border-[#dfe3ff] text-[#2c2a51] hover:bg-[#004be2] hover:text-white transition">Próxima</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
 
     </div>
 

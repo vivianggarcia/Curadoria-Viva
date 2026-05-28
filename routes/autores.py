@@ -1,15 +1,56 @@
-from flask import Blueprint, request, render_template, redirect, flash
+from flask import Blueprint, request, render_template, redirect, flash, url_for, session
 from db import conectar
+from functools import wraps
 
 autores_bp = Blueprint('autores', __name__)
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Você precisa fazer login para acessar esta página.', 'error')
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @autores_bp.route('/autores')
+@login_required
 def listar_autores():
+    q = request.args.get('q', '').strip()
+    page = request.args.get('page', '1')
+    try:
+        page = int(page)
+        if page < 1:
+            page = 1
+    except ValueError:
+        page = 1
+
+    per_page = 6
+    offset = (page - 1) * per_page
+
+    where_clauses = []
+    params = []
+    if q:
+        where_clauses.append('nome LIKE %s')
+        params.append(f'%{q}%')
+
+    where_sql = 'WHERE ' + ' AND '.join(where_clauses) if where_clauses else ''
+
     conn = conectar()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute('SELECT * FROM autores')
+    cursor.execute(f'SELECT COUNT(*) AS total FROM autores {where_sql}', params)
+    total = cursor.fetchone()['total']
+
+    cursor.execute(
+        f'SELECT * FROM autores {where_sql} ORDER BY nome ASC LIMIT %s OFFSET %s',
+        params + [per_page, offset]
+    )
     autores = cursor.fetchall()
-    return render_template('autores/listar.html', autores=autores)
+    conn.close()
+
+    total_pages = max((total + per_page - 1) // per_page, 1)
+
+    return render_template('autores/listar.html', autores=autores, q=q, page=page, total_pages=total_pages, total=total, per_page=per_page)
 
 @autores_bp.route('/autores/add', methods=['GET','POST'])
 def add_autor():
@@ -19,6 +60,7 @@ def add_autor():
         cursor = conn.cursor()
         cursor.execute('INSERT INTO autores (nome) VALUES (%s)', (nome,))
         conn.commit()
+        conn.close()
         return redirect('/autores')
     return render_template('autores/add.html')
 

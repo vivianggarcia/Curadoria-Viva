@@ -1,10 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="flex justify-between items-center mb-10">
-    <h1 class="text-4xl font-extrabold font-headline text-on-surface">Membros do Acervo</h1>
-    <a href="/usuarios/add" class="bg-primary text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 shadow-lg">
-        <span class="material-symbols-outlined">person_add</span> Novo Usuário
-    </a>
+<div class="space-y-6 mb-10">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div>
+            <h1 class="text-4xl font-extrabold font-headline text-on-surface">Membros do Acervo</h1>
+            <p class="text-sm text-on-surface-variant mt-2">Total de resultados: <strong>{{ total }}</strong></p>
+        </div>
+        <a href="/usuarios/add" class="bg-primary text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 shadow-lg">
+            <span class="material-symbols-outlined">person_add</span> Novo Usuário
+        </a>
+    </div>
+
+    <form action="{{ url_for('usuarios.listar') }}" method="get" class="grid gap-4 sm:grid-cols-[1fr_auto] items-end">
+        <div class="grid gap-4 sm:grid-cols-[1fr_220px]">
+            <label class="w-full">
+                <span class="text-sm font-semibold text-on-surface-variant">Pesquisar</span>
+                <input type="text" name="q" value="{{ q }}" placeholder="Nome, e-mail ou telefone" class="mt-2 w-full rounded-2xl border border-surface-container-high bg-white px-4 py-3 shadow-sm focus:border-primary focus:outline-none" />
+            </label>
+        </div>
+        <button type="submit" class="w-full sm:w-auto bg-primary text-white px-6 py-3 rounded-full font-bold hover:opacity-90 transition">Buscar</button>
+    </form>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -43,4 +58,20 @@
     </div>
     {% endfor %}
 </div>
+
+{% if total_pages > 1 %}
+<div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+    {% if page > 1 %}
+    <a href="{{ url_for('usuarios.listar', q=q, page=page-1) }}" class="px-4 py-2 rounded-full bg-surface text-on-surface border border-surface-container-high hover:bg-primary hover:text-white transition">Anterior</a>
+    {% endif %}
+
+    {% for p in range(1, total_pages+1) %}
+        <a href="{{ url_for('usuarios.listar', q=q, page=p) }}" class="px-4 py-2 rounded-full border {% if p == page %}bg-primary text-white{% else %}bg-white text-on-surface border-surface-container-high hover:bg-surface{% endif %}">{{ p }}</a>
+    {% endfor %}
+
+    {% if page < total_pages %}
+    <a href="{{ url_for('usuarios.listar', q=q, page=page+1) }}" class="px-4 py-2 rounded-full bg-surface text-on-surface border border-surface-container-high hover:bg-primary hover:text-white transition">Próxima</a>
+    {% endif %}
+</div>
+{% endif %}
 {% endblock %}

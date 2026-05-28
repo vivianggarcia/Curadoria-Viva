@@ -2,28 +2,36 @@
 
 {% block content %}
 
-<div class="flex items-center justify-between mb-10">
-    
-    <div class="flex flex-col">
-        <span class="text-xs font-bold text-primary uppercase tracking-[0.2em]">
-            Gestão de Autores
-        </span>
-        <h1 class="text-3xl font-extrabold text-on-surface font-headline">
-            Autores Cadastrados
-        </h1>
+<div class="space-y-6 mb-10">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div>
+            <span class="text-xs font-bold text-primary uppercase tracking-[0.2em]">
+                Gestão de Autores
+            </span>
+            <h1 class="text-3xl font-extrabold text-on-surface font-headline">
+                Autores Cadastrados
+            </h1>
+            <p class="text-sm text-on-surface-variant mt-2">Total de autores: <strong>{{ total }}</strong></p>
+        </div>
+
+        <a href="{{ url_for('autores.add_autor') }}"
+           class="flex items-center gap-2 px-6 py-3 rounded-full 
+           bg-gradient-to-r from-primary to-[#809bff] text-white font-bold 
+           shadow-lg shadow-primary/30 hover:scale-105 transition-all">
+
+            <span class="material-symbols-outlined">add</span>
+            Novo Autor
+        </a>
     </div>
 
-    <a href="{{ url_for('autores.add_autor') }}"
-       class="flex items-center gap-2 px-6 py-3 rounded-full 
-       bg-gradient-to-r from-primary to-[#809bff] text-white font-bold 
-       shadow-lg shadow-primary/30 hover:scale-105 transition-all">
-
-        <span class="material-symbols-outlined">add</span>
-        Novo Autor
-    </a>
-
+    <form action="{{ url_for('autores.listar_autores') }}" method="get" class="grid gap-4 sm:grid-cols-[1fr_auto] items-end">
+        <label class="w-full">
+            <span class="text-sm font-semibold text-on-surface-variant">Pesquisar autores</span>
+            <input type="text" name="q" value="{{ q }}" placeholder="Nome do autor" class="mt-2 w-full rounded-2xl border border-surface-container-high bg-white px-4 py-3 shadow-sm focus:border-primary focus:outline-none" />
+        </label>
+        <button type="submit" class="w-full sm:w-auto bg-primary text-white px-6 py-3 rounded-full font-bold hover:opacity-90 transition">Buscar</button>
+    </form>
 </div>
-
 
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
@@ -96,6 +104,20 @@
 {% endfor %}
 
 </div>
+
+{% if total_pages > 1 %}
+<div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+    {% if page > 1 %}
+        <a href="{{ url_for('autores.listar_autores', q=q, page=page-1) }}" class="px-4 py-2 rounded-full bg-surface text-on-surface border border-surface-container-high hover:bg-primary hover:text-white transition">Anterior</a>
+    {% endif %}
+    {% for p in range(1, total_pages+1) %}
+        <a href="{{ url_for('autores.listar_autores', q=q, page=p) }}" class="px-4 py-2 rounded-full border {% if p == page %}bg-primary text-white{% else %}bg-white text-on-surface border-surface-container-high hover:bg-surface{% endif %}">{{ p }}</a>
+    {% endfor %}
+    {% if page < total_pages %}
+        <a href="{{ url_for('autores.listar_autores', q=q, page=page+1) }}" class="px-4 py-2 rounded-full bg-surface text-on-surface border border-surface-container-high hover:bg-primary hover:text-white transition">Próxima</a>
+    {% endif %}
+</div>
+{% endif %}
 
 
 <!-- EMPTY STATE -->

@@ -1,23 +1,76 @@
-from flask import Blueprint, request, render_template, redirect
+from flask import Blueprint, request, render_template, redirect, flash, url_for, session
 from db import conectar
+from functools import wraps
 import datetime
 
-now = datetime.datetime.now() 
+now = datetime.datetime.now()
 emprestimos_bp = Blueprint('emprestimos', __name__)
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Você precisa fazer login para acessar esta página.', 'error')
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @emprestimos_bp.route('/emprestimos')
+@login_required
 def listar_emprestimos():
+    q = request.args.get('q', '').strip()
+    status = request.args.get('status', '').strip()
+    page = request.args.get('page', '1')
+    try:
+        page = int(page)
+        if page < 1:
+            page = 1
+    except ValueError:
+        page = 1
+
+    per_page = 6
+    offset = (page - 1) * per_page
+
+    where_clauses = []
+    params = []
+    if q:
+        where_clauses.append('(u.nome LIKE %s OR l.titulo LIKE %s OR e.id LIKE %s)')
+        params.extend([f'%{q}%'] * 3)
+
+    if status == 'finalizado':
+        where_clauses.append('e.data_devolucao IS NOT NULL AND e.data_devolucao < CURDATE()')
+    elif status == 'andamento':
+        where_clauses.append('e.data_devolucao IS NOT NULL AND e.data_devolucao >= CURDATE()')
+    elif status == 'sem_data':
+        where_clauses.append('e.data_devolucao IS NULL')
+
+    where_sql = 'WHERE ' + ' AND '.join(where_clauses) if where_clauses else ''
+
     conn = conectar()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT e.id, u.nome AS usuario, u.foto AS foto_usuario, e.data_emprestimo, e.data_devolucao, l.titulo AS livro, l.id AS id_livro, l.capa FROM emprestimos e JOIN usuarios u ON e.id_usuario = u.id LEFT JOIN emprestimo_livro el ON el.id_emprestimo = e.id LEFT JOIN livros l ON l.id = el.id_livro ORDER BY e.id DESC")
+    cursor.execute('SELECT COUNT(*) AS total FROM emprestimos e JOIN usuarios u ON e.id_usuario = u.id LEFT JOIN emprestimo_livro el ON el.id_emprestimo = e.id LEFT JOIN livros l ON l.id = el.id_livro ' + where_sql, params)
+    total = cursor.fetchone()['total']
+
+    cursor.execute(
+        'SELECT e.id, u.nome AS usuario, u.foto AS foto_usuario, e.data_emprestimo, e.data_devolucao, l.titulo AS livro, l.id AS id_livro, l.capa FROM emprestimos e JOIN usuarios u ON e.id_usuario = u.id LEFT JOIN emprestimo_livro el ON el.id_emprestimo = e.id LEFT JOIN livros l ON l.id = el.id_livro ' + where_sql + ' ORDER BY e.id DESC LIMIT %s OFFSET %s',
+        params + [per_page, offset]
+    )
     emprestimos = cursor.fetchall()
     cursor.close()
     conn.close()
 
+    total_pages = max((total + per_page - 1) // per_page, 1)
+
     return render_template(
         'emprestimos/listar.html',
         emprestimos=emprestimos,
-        now=now
+        now=now,
+        q=q,
+        status=status,
+        page=page,
+        total_pages=total_pages,
+        total=total,
+        per_page=per_page
     )
 
 @emprestimos_bp.route('/emprestimos/add', methods=['GET', 'POST'])

@@ -134,13 +134,22 @@
                     </nav>
 
                     <!-- icones direita -->
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3">
                         <button class="p-3 hover:bg-primary/10 rounded-xl transition-all duration-300 text-primary">
                             <span class="material-symbols-outlined">notifications</span>
                         </button>
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-tertiary flex items-center justify-center text-white font-headline font-bold shadow-lg hover:scale-110 transition-transform cursor-pointer">
-                            A
-                        </div>
+                        {% if session.get('user_id') %}
+                            <a href="{{ url_for('auth.logout') }}" class="p-2 hover:bg-red-100 rounded-lg transition-all duration-300 text-red-600 text-sm font-medium" title="Logout">
+                                <span class="material-symbols-outlined text-lg">logout</span>
+                            </a>
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-tertiary flex items-center justify-center text-white font-headline font-bold shadow-lg hover:scale-110 transition-transform cursor-pointer text-sm" title="{{ session.get('user_nome', 'Usuário') }}">
+                                {{ session.get('user_nome', 'U')[0].upper() }}
+                            </div>
+                        {% else %}
+                            <a href="{{ url_for('auth.login') }}" class="px-4 py-2 bg-primary text-white font-semibold rounded-lg hover:opacity-90 transition-opacity text-sm">
+                                Entrar
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

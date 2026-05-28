@@ -90,10 +90,17 @@
                     aplicarMascaraTelefone('telefone');
                     </script>
 
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold text-on-surface-variant uppercase tracking-widest ml-1">Senha</label>
+                    <input type="password" name="senha"
+                        class="w-full bg-surface-container-low border-none rounded-xl px-6 py-4 focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:text-on-surface-variant/40 transition-all" 
+                        placeholder="Deixe em branco para manter a senha atual">
+                </div>
+
                 <div class="p-4 bg-surface-container-low rounded-2xl flex items-start gap-3 mt-2">
                     <span class="material-symbols-outlined text-primary text-xl">info</span>
                     <p class="text-[11px] text-on-surface-variant leading-tight italic">
-                        Insira informações válidas para contato.
+                        Insira informações válidas para contato. Deixe a senha em branco para não alterá-la.
                     </p>
                 </div>
             </div>
@@ -112,7 +119,7 @@
     </form>
 </div>
 
-<!-- script para preview da imagem e contagem de caracteres pro perfil avatar-->
+<!-- script pra imagem e contagem de caracteres pro perfil avatar-->
 <script>
     const urlInput = document.getElementById('foto_url');
     const avatarPreview = document.getElementById('avatar-preview');
