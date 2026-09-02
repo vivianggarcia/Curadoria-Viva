@@ -1,5 +1,7 @@
 # Curadoria Viva - Sistema de Biblioteca
 
+![CI](https://github.com/vivianggarcia/Curadoria-Viva/actions/workflows/ci.yml/badge.svg)
+
 Sistema completo de gerenciamento de biblioteca desenvolvido com Flask e MySQL.
 
 ## Requisitos
@@ -86,7 +88,10 @@ api_biblioteca/
 ├── db.py               # Conexão com banco de dados
 ├── config.py           # Carregamento de configurações
 ├── requirements.txt    # Dependências Python
+├── requirements-dev.txt # Dependências para desenvolvimento/testes
+├── tests/              # Testes unitários (pytest)
 ├── .env               # Variáveis de ambiente (NÃO commitar)
+├── .github/workflows/ # Pipeline de CI (GitHub Actions)
 ├── .gitignore         # Arquivos ignorados pelo Git
 └── README.md          # Este arquivo
 ```
@@ -100,6 +105,17 @@ api_biblioteca/
 -  Relação Livro-Empréstimo
 -  Interface Responsiva
 -  Design Moderno com Tailwind CSS
+
+## Testes
+
+Os testes unitários utilizam **pytest** e **Flask test client**, sem a necessidade de um servidor MySQL (a camada de banco é simulada).
+
+```bash
+pip install -r requirements-dev.txt
+pytest -v
+```
+
+Os testes são executados automaticamente pelo **GitHub Actions** (CI) em cada push/PR para a branch `main`. Para ver o status, acesse a aba *Actions* do repositório.
 
 ## Desativar o Venv
 
